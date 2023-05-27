@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location_tracker/widgets/text_widget.dart';
 
 import '../widgets/drawer_widget.dart';
 
@@ -27,12 +28,15 @@ class _MainMapState extends State<MainMap> {
           ),
         ),
       ),
-      body: const SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [],
-          ),
+      body: SingleChildScrollView(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextRegular(
+                text: '\n\n\n\n\n\n\n\n\n\nDisplay Map',
+                fontSize: 25,
+                color: Colors.black),
+          ],
         ),
       ),
     );

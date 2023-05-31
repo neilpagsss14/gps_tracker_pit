@@ -21,7 +21,7 @@ class _MainMapState extends State<MainMap> {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Sample Google Map',
+            'Home Screen',
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,

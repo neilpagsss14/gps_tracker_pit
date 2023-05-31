@@ -37,6 +37,7 @@ dependencies:
   # google_maps_flutter: ^2.2.8
   flutter_map:
   google_maps_flutter:
+  geolocator:
 
 dev_dependencies:
   flutter_test:

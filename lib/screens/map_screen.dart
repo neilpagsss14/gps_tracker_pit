@@ -23,6 +23,8 @@ class _MainMapState extends State<MainMap> {
     getLocation();
   }
 
+  double speed = 0.0;
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
@@ -47,6 +49,7 @@ class _MainMapState extends State<MainMap> {
       long = currentPosition.longitude;
       hasLoaded = true;
       previousPosition = currentPosition;
+      speed = calculateSpeed(previousPosition!, currentPosition);
     });
   }
 
@@ -107,15 +110,25 @@ class _MainMapState extends State<MainMap> {
         ),
       ),
       body: hasLoaded
-          ? GoogleMap(
-              buildingsEnabled: true,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              mapType: MapType.normal,
-              initialCameraPosition: kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
+          ? Column(
+              children: [
+                Expanded(
+                  child: GoogleMap(
+                    buildingsEnabled: true,
+                    myLocationEnabled: true,
+                    compassEnabled: true,
+                    indoorViewEnabled: true,
+                    mapToolbarEnabled: true,
+                    myLocationButtonEnabled: true,
+                    mapType: MapType.normal,
+                    initialCameraPosition: kGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                  ),
+                ),
+                Text('Speed: ${speed.toStringAsFixed(2)} meters per second'),
+              ],
             )
           : const Center(
               child: CircularProgressIndicator(),

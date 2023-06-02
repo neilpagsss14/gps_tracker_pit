@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../widgets/drawer_widget.dart';
+import 'dart:math' as math;
 
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
@@ -28,16 +29,60 @@ class _MainMapState extends State<MainMap> {
   late double lat = 0;
   late double long = 0;
   bool hasLoaded = false;
+  Position? previousPosition;
 
   getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position currentPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    if (previousPosition != null) {
+      // Calculate speed based on previous and current positions
+      double speed = calculateSpeed(previousPosition!, currentPosition);
 
+      // Use the speed as needed (e.g., update UI)
+      print('Speed: $speed meters per second');
+    }
     setState(() {
-      lat = position.latitude;
-      long = position.longitude;
+      lat = currentPosition.latitude;
+      long = currentPosition.longitude;
       hasLoaded = true;
+      previousPosition = currentPosition;
     });
+  }
+
+  double calculateSpeed(Position previousPosition, Position currentPosition) {
+    const int earthRadius = 6371000; // in meters
+
+    final double lat1 = previousPosition.latitude;
+    final double lon1 = previousPosition.longitude;
+    final double lat2 = currentPosition.latitude;
+    final double lon2 = currentPosition.longitude;
+
+    final double dLat = _toRadians(lat2 - lat1);
+    final double dLon = _toRadians(lon2 - lon1);
+
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_toRadians(lat1)) *
+            math.cos(_toRadians(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    final double distance = earthRadius * c; // in meters
+
+    // Calculate time difference in seconds
+    final double timeDifference =
+        (currentPosition.timestamp!.millisecondsSinceEpoch -
+                previousPosition.timestamp!.millisecondsSinceEpoch) /
+            1000;
+
+    // Calculate speed in meters per second
+    final double speed = distance / timeDifference;
+
+    return speed;
+  }
+
+  double _toRadians(double degree) {
+    return degree * math.pi / 180;
   }
 
   @override

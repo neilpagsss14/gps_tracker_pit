@@ -35,7 +35,7 @@ class _MainMapState extends State<MainMap> {
 
   getLocation() async {
     Position currentPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      desiredAccuracy: LocationAccuracy.best,
     );
     if (previousPosition != null) {
       // Calculate speed based on previous and current positions

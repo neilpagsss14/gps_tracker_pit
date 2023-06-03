@@ -37,6 +37,11 @@ class _MainMapState extends State<MainMap> {
     Position currentPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
+    if (previousPosition != null) {
+      setState(() {
+        speed = calculateSpeed(previousPosition!, currentPosition);
+      });
+    }
     // if (previousPosition != null) {
     //   // Calculate speed based on previous and current positions
     //   double speed = calculateSpeed(previousPosition!, currentPosition);
@@ -50,7 +55,6 @@ class _MainMapState extends State<MainMap> {
       long = currentPosition.longitude;
       hasLoaded = true;
       previousPosition = currentPosition;
-      speed = calculateSpeed(previousPosition!, currentPosition);
     });
   }
 
@@ -80,9 +84,12 @@ class _MainMapState extends State<MainMap> {
             1000;
 
     // Calculate speed in meters per second
-    final double speed = distance / timeDifference;
+    final double speedMetersPerSecond = distance / timeDifference;
 
-    return speed;
+    // Convert speed from meters per second to kilometers per hour
+    final double speedKilometersPerHour = speedMetersPerSecond * 3.6;
+
+    return speedKilometersPerHour;
   }
 
   double _toRadians(double degree) {
@@ -138,7 +145,7 @@ class _MainMapState extends State<MainMap> {
                         },
                       ),
                       Align(
-                        alignment: Alignment.bottomCenter,
+                        alignment: Alignment.topLeft,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
@@ -147,11 +154,11 @@ class _MainMapState extends State<MainMap> {
                               height: 65.0,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.blue,
+                                color: Colors.white54,
                               ),
                             ),
                             Text(
-                              "${speed.toStringAsFixed(2)} m/s",
+                              "${speed.toStringAsFixed(2)} km/p",
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

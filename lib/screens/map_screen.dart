@@ -158,7 +158,7 @@ class _MainMapState extends State<MainMap> {
                               ),
                             ),
                             Text(
-                              "${speed.toStringAsFixed(2)} km/p",
+                              "${speed.toStringAsFixed(2)} km/h",
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

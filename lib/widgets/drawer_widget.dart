@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location_tracker/screens/about_gpspeed.dart';
 import 'package:location_tracker/screens/map_screen.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
 
@@ -103,8 +104,8 @@ class DrawerWidget extends StatelessWidget {
                 color: Colors.grey,
               ),
               onTap: () {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const MainMap()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const AboutGPSpeed()));
               },
             ),
             // ListTile(

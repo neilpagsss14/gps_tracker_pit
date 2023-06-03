@@ -37,13 +37,14 @@ class _MainMapState extends State<MainMap> {
     Position currentPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.best,
     );
-    if (previousPosition != null) {
-      // Calculate speed based on previous and current positions
-      double speed = calculateSpeed(previousPosition!, currentPosition);
+    // if (previousPosition != null) {
+    //   // Calculate speed based on previous and current positions
+    //   double speed = calculateSpeed(previousPosition!, currentPosition);
 
-      // Use the speed as needed (e.g., update UI)
-      print('Speed: $speed meters per second');
-    }
+    //   // Use the speed as needed (e.g., update UI)
+    //   // print('Speed: $speed meters per second');
+    //   // Text('Speed: ${speed.toStringAsFixed(2)} meters per seconds');
+    // }
     setState(() {
       lat = currentPosition.latitude;
       long = currentPosition.longitude;
@@ -108,26 +109,61 @@ class _MainMapState extends State<MainMap> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () {
+              // Perform search action
+            },
+          ),
+        ],
       ),
       body: hasLoaded
           ? Column(
               children: [
                 Expanded(
-                  child: GoogleMap(
-                    buildingsEnabled: true,
-                    myLocationEnabled: true,
-                    compassEnabled: true,
-                    indoorViewEnabled: true,
-                    mapToolbarEnabled: true,
-                    myLocationButtonEnabled: true,
-                    mapType: MapType.normal,
-                    initialCameraPosition: kGooglePlex,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
+                  child: Stack(
+                    children: [
+                      GoogleMap(
+                        buildingsEnabled: true,
+                        myLocationEnabled: true,
+                        compassEnabled: true,
+                        indoorViewEnabled: true,
+                        mapToolbarEnabled: true,
+                        myLocationButtonEnabled: true,
+                        mapType: MapType.normal,
+                        initialCameraPosition: kGooglePlex,
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 65.0,
+                              height: 65.0,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              "${speed.toStringAsFixed(2)} m/s",
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text('Speed: ${speed.toStringAsFixed(2)} meters per second'),
               ],
             )
           : const Center(

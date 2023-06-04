@@ -21,6 +21,7 @@ class _MainMapState extends State<MainMap> {
   }
 
   double speed = 0.0;
+  double newSpeed = 0.0;
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -39,6 +40,13 @@ class _MainMapState extends State<MainMap> {
         speed = calculateSpeed(previousPosition!, currentPosition);
       });
     }
+
+    Geolocator.getPositionStream().listen((position) {
+      setState(() {
+        newSpeed = position.speed;
+      });
+    });
+
     // if (previousPosition != null) {
     //   // Calculate speed based on previous and current positions
     //   double speed = calculateSpeed(previousPosition!, currentPosition);
@@ -152,7 +160,7 @@ class _MainMapState extends State<MainMap> {
                               ),
                             ),
                             Text(
-                              "${speed.toStringAsFixed(2)} m/s",
+                              "${newSpeed.toStringAsFixed(2)} m/s",
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

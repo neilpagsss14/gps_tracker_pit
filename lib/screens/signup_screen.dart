@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:location_tracker/screens/login_screen.dart';
-import 'package:location_tracker/screens/map_screen.dart';
 
 import '../widgets/text_widget.dart';
 

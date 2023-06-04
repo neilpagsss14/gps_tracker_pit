@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:location_tracker/screens/about_gps_screen.dart';
 import 'package:location_tracker/screens/login_screen.dart';
 import 'package:location_tracker/screens/map_screen.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
+
+import '../screens/about_gpspeed.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({Key? key}) : super(key: key);

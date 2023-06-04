@@ -32,7 +32,7 @@ class _MainMapState extends State<MainMap> {
 
   getLocation() async {
     Position currentPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
+      desiredAccuracy: LocationAccuracy.high,
     );
     if (previousPosition != null) {
       setState(() {
@@ -81,12 +81,9 @@ class _MainMapState extends State<MainMap> {
             1000;
 
     // Calculate speed in meters per second
-    final double speedMetersPerSecond = distance / timeDifference;
+    final double speed = distance / timeDifference;
 
-    // Convert speed from meters per second to kilometers per hour
-    final double speedKilometersPerHour = speedMetersPerSecond * 3.6;
-
-    return speedKilometersPerHour;
+    return speed;
   }
 
   double _toRadians(double degree) {
@@ -155,7 +152,7 @@ class _MainMapState extends State<MainMap> {
                               ),
                             ),
                             Text(
-                              "${speed.toStringAsFixed(2)} km/h",
+                              "${speed.toStringAsFixed(2)} m/s",
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,

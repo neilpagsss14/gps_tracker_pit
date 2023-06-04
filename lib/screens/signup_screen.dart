@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:location_tracker/screens/login_screen.dart';
+import 'package:location_tracker/services/add_user.dart';
 
 import '../widgets/text_widget.dart';
 
 class SignupScreen extends StatelessWidget {
   late String username;
+  late String name;
+  late String phoneNumber;
   late String password;
 
   final box = GetStorage();
@@ -33,6 +37,36 @@ class SignupScreen extends StatelessWidget {
               ),
               const SizedBox(
                 height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                    onChanged: ((value) {
+                      name = value;
+                    }),
+                    decoration: InputDecoration(
+                        hintText: 'Full Name',
+                        prefixIcon: const Icon(Icons.person),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)))),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                    onChanged: ((value) {
+                      phoneNumber = value;
+                    }),
+                    decoration: InputDecoration(
+                        hintText: 'Phone Number',
+                        prefixIcon: const Icon(Icons.phone),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)))),
               ),
               Padding(
                 padding: const EdgeInsets.only(
@@ -74,11 +108,33 @@ class SignupScreen extends StatelessWidget {
                 color: Colors.blue,
                 minWidth: 340,
                 height: 45,
-                onPressed: () {
-                  box.write('username', username);
-                  box.write('password', password);
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                onPressed: () async {
+                  try {
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: username, password: password);
+
+                    addUser(name, username, phoneNumber);
+
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: TextRegular(
+                            text: 'Account created succesfully!',
+                            fontSize: 14,
+                            color: Colors.white),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: TextRegular(
+                            text: e.toString(),
+                            fontSize: 14,
+                            color: Colors.white),
+                      ),
+                    );
+                  }
                 },
                 child: TextRegular(
                     text: 'Register', fontSize: 20, color: Colors.white),

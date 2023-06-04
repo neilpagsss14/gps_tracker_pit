@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:location_tracker/screens/map_screen.dart';
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   username = input;
                 },
                 decoration: InputDecoration(
-                    hintText: 'Input Username',
+                    hintText: 'Input Email',
                     prefixIcon: const Icon(Icons.email),
                     filled: true,
                     fillColor: Colors.white,
@@ -92,21 +93,22 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.blueAccent.shade100,
               minWidth: 200,
               height: 50,
-              onPressed: () {
-                if (username == box.read('username') &&
-                    password == box.read('password')) {
-                  //  Navigator.of(context).pop();
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: username, password: password);
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (context) => const MainMap()));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
                       content: TextRegular(
-                          text: 'Invalid Account!',
-                          fontSize: 12,
-                          color: Colors.white)));
+                          text: e.toString(),
+                          fontSize: 14,
+                          color: Colors.white),
+                    ),
+                  );
                 }
-                // Navigator.of(context).pushReplacement(
-                //     MaterialPageRoute(builder: (context) => const MainMap()));
               },
               child: TextRegular(
                   text: 'Log in', fontSize: 25, color: Colors.black),

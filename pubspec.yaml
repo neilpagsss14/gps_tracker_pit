@@ -40,6 +40,9 @@ dependencies:
   google_maps_flutter:
   geolocator:
   permission_handler:
+  firebase_core:
+  cloud_firestore:
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:

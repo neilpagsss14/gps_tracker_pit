@@ -191,7 +191,8 @@ class DrawerWidget extends StatelessWidget {
                                     ),
                                   ),
                                   MaterialButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await FirebaseAuth.instance.signOut();
                                       Navigator.of(context).pop(
                                           MaterialPageRoute(
                                               builder: (context) =>

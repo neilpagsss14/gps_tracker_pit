@@ -91,6 +91,9 @@ class _MainMapState extends State<MainMap> {
     // Calculate speed in meters per second
     final double speed = distance / timeDifference;
 
+    // Convert speed to kilometers per hour
+    // final double speedInKmH = speed * 3.6;
+
     return speed;
   }
 

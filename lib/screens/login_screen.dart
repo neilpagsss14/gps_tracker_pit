@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _obscureText = true;
   final box = GetStorage();
   late String username;
   late String password;
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   username = input;
                 },
                 decoration: InputDecoration(
-                    hintText: 'Enter Email Address',
+                    hintText: 'Email Address',
                     prefixIcon: const Icon(Icons.email),
                     filled: true,
                     fillColor: Colors.white,
@@ -71,17 +72,29 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30),
               child: TextFormField(
-                obscureText: true,
-                onChanged: (String input) {
-                  password = input;
+                obscureText: _obscureText,
+                onChanged: (value) {
+                  password = value;
                 },
                 decoration: InputDecoration(
-                    hintText: 'Enter Password',
-                    prefixIcon: const Icon(Icons.key),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10))),
+                  hintText: 'Password',
+                  prefixIcon: const Icon(Icons.password),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
               ),
             ),
             const SizedBox(
@@ -144,8 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             TextButton(
               onPressed: (() {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => SignupScreen()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const SignupScreen()));
               }),
               child:
                   TextBold(text: 'Signup', fontSize: 18, color: Colors.white),

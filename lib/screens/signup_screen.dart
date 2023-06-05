@@ -6,15 +6,25 @@ import 'package:location_tracker/services/add_user.dart';
 
 import '../widgets/text_widget.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
   late String username;
+
   late String name;
+
   late String phoneNumber;
+
   late String password;
 
-  final box = GetStorage();
+  bool _obscureText = true;
 
-  SignupScreen({super.key});
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +87,7 @@ class SignupScreen extends StatelessWidget {
                       username = value;
                     }),
                     decoration: InputDecoration(
-                        hintText: 'Username',
+                        hintText: 'Email Address',
                         prefixIcon: const Icon(Icons.email),
                         filled: true,
                         fillColor: Colors.white,
@@ -88,17 +98,30 @@ class SignupScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(
                     left: 25, right: 25, top: 10, bottom: 10),
                 child: TextFormField(
-                    obscureText: true,
-                    onChanged: ((value) {
-                      password = value;
-                    }),
-                    decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.password),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)))),
+                  obscureText: _obscureText,
+                  onChanged: (value) {
+                    password = value;
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    prefixIcon: const Icon(Icons.password),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 20,

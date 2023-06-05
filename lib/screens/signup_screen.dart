@@ -46,7 +46,7 @@ class SignupScreen extends StatelessWidget {
                       name = value;
                     }),
                     decoration: InputDecoration(
-                        hintText: 'Full Name',
+                        hintText: 'Name',
                         prefixIcon: const Icon(Icons.person),
                         filled: true,
                         fillColor: Colors.white,
@@ -57,11 +57,12 @@ class SignupScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(
                     left: 25, right: 25, top: 10, bottom: 10),
                 child: TextFormField(
+                    keyboardType: TextInputType.number,
                     onChanged: ((value) {
                       phoneNumber = value;
                     }),
                     decoration: InputDecoration(
-                        hintText: 'Phone Number',
+                        hintText: '09XXXXXXXXX',
                         prefixIcon: const Icon(Icons.phone),
                         filled: true,
                         fillColor: Colors.white,

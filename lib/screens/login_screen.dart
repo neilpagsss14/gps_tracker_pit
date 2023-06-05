@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   username = input;
                 },
                 decoration: InputDecoration(
-                    hintText: 'Input Email',
+                    hintText: 'Enter Email Address',
                     prefixIcon: const Icon(Icons.email),
                     filled: true,
                     fillColor: Colors.white,
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   password = input;
                 },
                 decoration: InputDecoration(
-                    hintText: 'Input Password',
+                    hintText: 'Enter Password',
                     prefixIcon: const Icon(Icons.key),
                     filled: true,
                     fillColor: Colors.white,

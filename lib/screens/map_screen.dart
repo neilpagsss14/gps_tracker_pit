@@ -146,28 +146,31 @@ class _MainMapState extends State<MainMap> {
                           _controller.complete(controller);
                         },
                       ),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              width: 65.0,
-                              height: 65.0,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white54,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, top: 10),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 65.0,
+                                height: 65.0,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white54,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "${newSpeed.toStringAsFixed(2)} m/s",
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                              Text(
+                                "${newSpeed.toStringAsFixed(2)} km/h",
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

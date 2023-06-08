@@ -7,8 +7,6 @@ import 'package:location_tracker/widgets/text_widget.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
 
-import '../widgets/toast_widget.dart';
-
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
 
@@ -43,8 +41,6 @@ class _MainMapState extends State<MainMap> {
   Position? previousPosition;
 
   getLocation() async {
-    controller:
-    locationController;
     Position currentPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -127,15 +123,32 @@ class _MainMapState extends State<MainMap> {
           FloatingActionButton(
             backgroundColor: Colors.deepPurpleAccent,
             onPressed: () async {
-              showToast('Data has been stored to the Database');
-              Map<String, String> tracker = {
-                'location': locationController.text,
-                'speed': speedController.text,
-              };
-              // Navigator.of(context).pushReplacement(
-              //   MaterialPageRoute(builder: (context) => const MainMap()),
-              // );
-              dbRef.push().set(tracker);
+              showDialog(
+                  barrierDismissible: true,
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: TextBold(
+                          text: "PROCEED FETCHING DATA?",
+                          fontSize: 22,
+                          color: Colors.black),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Map<String, String> tracker = {
+                                'location': locationController.text,
+                                'speed': speedController.text,
+                              };
+                              // Navigator.of(context).pushReplacement(
+                              //   MaterialPageRoute(builder: (context) => const MainMap()),
+                              // );
+                              dbRef.push().set(tracker);
+                            },
+                            child: const Text('OK')),
+                      ],
+                    );
+                  });
             },
             child: const SizedBox(
               width: 100, // Adjust the width as needed

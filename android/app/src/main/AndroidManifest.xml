@@ -2,6 +2,7 @@
 package="com.example.location_tracker">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
     <application
         android:label="GPSPeed"
         android:name="${applicationName}"

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
-import 'package:telephony/telephony.dart';
-import 'package:get/get.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
+import 'package:flutter_sms/flutter_sms.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
@@ -17,7 +16,8 @@ class MainMap extends StatefulWidget {
 
 class _MainMapState extends State<MainMap> {
   late String report = '';
-  final Telephony telephony = Telephony.instance;
+
+  List<String> recipients = ["09352752164", "09669420116"];
   @override
   void initState() {
     super.initState();
@@ -48,7 +48,7 @@ class _MainMapState extends State<MainMap> {
 
     Geolocator.getPositionStream().listen((position) {
       setState(() {
-        newSpeed = position.speed;
+        newSpeed = position.speed * 4;
       });
     });
 
@@ -118,81 +118,19 @@ class _MainMapState extends State<MainMap> {
         children: [
           FloatingActionButton(
             backgroundColor: Colors.deepPurpleAccent,
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        backgroundColor: Colors.grey[200],
-                        title: TextRegular(
-                            text: 'Sending Report',
-                            fontSize: 12,
-                            color: Colors.grey),
-                        content: SizedBox(
-                          height: 250,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 20, 20, 5),
-                                child: TextFormField(
-                                  maxLines: 5,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: 'Quicksand'),
-                                  onChanged: (input) {
-                                    report = input;
-                                  },
-                                  decoration: InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 1, color: Colors.white),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 1, color: Colors.grey),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    labelText: 'Enter Report',
-                                    labelStyle: const TextStyle(
-                                      fontFamily: 'Quicksand',
-                                      color: Colors.grey,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              MaterialButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                color: Colors.blue,
-                                onPressed: () {
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const MainMap()));
-                                  telephony.sendSms(
-                                      to: '09173688850', message: report);
-                                  Get.off(() => const MainMap());
-                                },
-                                child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 50, right: 50),
-                                    child: TextRegular(
-                                        text: 'Send',
-                                        fontSize: 15,
-                                        color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ));
+            onPressed: () async {
+              // _sendSMS();
+              String message = "This is a test message!";
+              List<String> recipients = ["+639669420116"];
+
+              String result = await sendSMS(
+                      message: message,
+                      recipients: recipients,
+                      sendDirect: true)
+                  .catchError((onError) {
+                print(onError);
+              });
+              print(result);
             },
             child: const SizedBox(
               width: 100, // Adjust the width as needed
@@ -277,13 +215,20 @@ class _MainMapState extends State<MainMap> {
                                 ),
                               ),
                               Text(
-                                "${newSpeed.toStringAsFixed(2)}\nkm/h",
+                                newSpeed.toStringAsFixed(2),
                                 style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 35,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 35),
+                                child: TextBold(
+                                    text: 'km/h',
+                                    fontSize: 15,
+                                    color: Colors.black),
+                              )
                             ],
                           ),
                         ),
@@ -335,4 +280,9 @@ class _MainMapState extends State<MainMap> {
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
+
+  // _sendSMS() {
+  //   String sms1 = 'sms:096694201160';
+  //   launchUrl(sms1 as Uri);
+  // }
 }

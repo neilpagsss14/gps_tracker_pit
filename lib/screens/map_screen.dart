@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
-import 'package:flutter_sms/flutter_sms.dart';
+
 
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
@@ -116,28 +116,6 @@ class _MainMapState extends State<MainMap> {
         mainAxisAlignment: MainAxisAlignment.end,
         // crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            backgroundColor: Colors.deepPurpleAccent,
-            onPressed: () async {
-              // _sendSMS();
-              String message = "This is a test message!";
-              List<String> recipients = ["+639669420116"];
-
-              String result = await sendSMS(
-                      message: message,
-                      recipients: recipients,
-                      sendDirect: true)
-                  .catchError((onError) {
-                print(onError);
-              });
-              print(result);
-            },
-            child: const SizedBox(
-              width: 100, // Adjust the width as needed
-              height: 100, // Adjust the height as needed
-              child: Icon(Icons.sms),
-            ),
-          ),
           const SizedBox(
             height: 15,
           ),

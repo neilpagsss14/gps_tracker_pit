@@ -46,6 +46,7 @@ dependencies:
   url_launcher:
   firebase_database: ^10.2.2
   fluttertoast:
+  geocoding:
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -15,18 +16,33 @@ class MainMap extends StatefulWidget {
 }
 
 class _MainMapState extends State<MainMap> {
-  final locationController = TextEditingController();
-  final speedController = TextEditingController();
+  Timer? timer;
 
   late String report = '';
   late DatabaseReference dbRef;
 
+  Map<String, dynamic> trackerData = {
+    'latitude': 0.0,
+    'longitude': 0.0,
+    'speed': 0.0,
+  };
+
   @override
   void initState() {
     super.initState();
+    Firebase.initializeApp();
     determinePosition();
     getLocation();
     dbRef = FirebaseDatabase.instance.ref().child("Tracker");
+    timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      uploadDataToDatabase();
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   double speed = 0.0;
@@ -38,6 +54,7 @@ class _MainMapState extends State<MainMap> {
   late double lat = 0;
   late double long = 0;
   bool hasLoaded = false;
+  bool isStoringData = true;
   Position? previousPosition;
 
   getLocation() async {
@@ -54,6 +71,16 @@ class _MainMapState extends State<MainMap> {
       setState(() {
         newSpeed = position.speed * 4;
       });
+
+      // // Update the trackerData with the new location and speed
+      // trackerData['latitude'] = position.latitude;
+      // trackerData['longitude'] = position.longitude;
+      // trackerData['speed'] = newSpeed;
+      // dbRef.push().set({
+      //   'latitude': position.latitude,
+      //   'longitude': position.longitude,
+      //   'speed': newSpeed,
+      // });
     });
 
     // if (previousPosition != null) {
@@ -108,6 +135,31 @@ class _MainMapState extends State<MainMap> {
     return degree * math.pi / 180;
   }
 
+  void uploadDataToDatabase() {
+    if (isStoringData && previousPosition != null) {
+      final latitude = previousPosition!.latitude;
+      final longitude = previousPosition!.longitude;
+
+      // Format the speed with 2 decimal places
+      final formattedSpeed = newSpeed.toStringAsFixed(2);
+
+      // Add "km/h" text to the formatted speed
+      final speedWithUnit = '$formattedSpeed km/h';
+
+      // Create a Google Maps link using the latitude and longitude
+      final googleMapsLink =
+          'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+
+      Map<String, dynamic> trackerData = {
+        'latitude': latitude,
+        'longitude': longitude,
+        'speed': speedWithUnit,
+        'googleMapsLink': googleMapsLink,
+      };
+      dbRef.push().set(trackerData);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     CameraPosition kGooglePlex = CameraPosition(
@@ -115,50 +167,32 @@ class _MainMapState extends State<MainMap> {
       zoom: 14.4746,
     );
     return Scaffold(
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        // crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            backgroundColor: Colors.deepPurpleAccent,
-            onPressed: () async {
-              showDialog(
-                  barrierDismissible: true,
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: TextBold(
-                          text: "PROCEED FETCHING DATA?",
-                          fontSize: 22,
-                          color: Colors.black),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Map<String, String> tracker = {
-                                'location': locationController.text,
-                                'speed': speedController.text,
-                              };
-                              // Navigator.of(context).pushReplacement(
-                              //   MaterialPageRoute(builder: (context) => const MainMap()),
-                              // );
-                              dbRef.push().set(tracker);
-                            },
-                            child: const Text('OK')),
-                      ],
-                    );
-                  });
-            },
-            child: const SizedBox(
-              width: 100, // Adjust the width as needed
-              height: 100, // Adjust the height as needed
-              child: Icon(Icons.cloud_done_rounded),
+          Padding(
+            padding: const EdgeInsets.only(left: 337),
+            child: RawMaterialButton(
+              onPressed: () {
+                setState(() {
+                  isStoringData = !isStoringData;
+                });
+              },
+              elevation: 2.0,
+              fillColor:
+                  isStoringData ? Colors.deepPurpleAccent : Colors.transparent,
+              padding: const EdgeInsets.all(15),
+              shape: const CircleBorder(),
+              child: const Icon(
+                Icons.cloud_done_rounded,
+                color: Colors.white,
+                size: 25,
+              ),
             ),
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           FloatingActionButton(
             backgroundColor: Colors.deepPurpleAccent,
             onPressed: () {
@@ -167,14 +201,11 @@ class _MainMapState extends State<MainMap> {
               );
             },
             child: const SizedBox(
-              width: 100, // Adjust the width as needed
-              height: 100, // Adjust the height as needed
               child: Icon(Icons.refresh),
             ),
           ),
         ],
       ),
-
       drawer: const Drawer(
         child: DrawerWidget(),
       ),

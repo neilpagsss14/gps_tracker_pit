@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,6 +7,7 @@ import 'package:location_tracker/widgets/text_widget.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
 
+import '../widgets/toast_widget.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
@@ -15,14 +17,18 @@ class MainMap extends StatefulWidget {
 }
 
 class _MainMapState extends State<MainMap> {
-  late String report = '';
+  final locationController = TextEditingController();
+  final speedController = TextEditingController();
 
-  List<String> recipients = ["09352752164", "09669420116"];
+  late String report = '';
+  late DatabaseReference dbRef;
+
   @override
   void initState() {
     super.initState();
     determinePosition();
     getLocation();
+    dbRef = FirebaseDatabase.instance.ref().child("Tracker");
   }
 
   double speed = 0.0;
@@ -37,6 +43,8 @@ class _MainMapState extends State<MainMap> {
   Position? previousPosition;
 
   getLocation() async {
+    controller:
+    locationController;
     Position currentPosition = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -116,6 +124,25 @@ class _MainMapState extends State<MainMap> {
         mainAxisAlignment: MainAxisAlignment.end,
         // crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          FloatingActionButton(
+            backgroundColor: Colors.deepPurpleAccent,
+            onPressed: () async {
+              showToast('Data has been stored to the Database');
+              Map<String, String> tracker = {
+                'location': locationController.text,
+                'speed': speedController.text,
+              };
+              // Navigator.of(context).pushReplacement(
+              //   MaterialPageRoute(builder: (context) => const MainMap()),
+              // );
+              dbRef.push().set(tracker);
+            },
+            child: const SizedBox(
+              width: 100, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
+              child: Icon(Icons.cloud_done_rounded),
+            ),
+          ),
           const SizedBox(
             height: 15,
           ),

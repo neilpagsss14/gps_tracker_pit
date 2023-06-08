@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location_tracker/widgets/text_widget.dart';
+import 'package:telephony/telephony.dart';
+import 'package:get/get.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
 
@@ -13,6 +16,8 @@ class MainMap extends StatefulWidget {
 }
 
 class _MainMapState extends State<MainMap> {
+  late String report = '';
+  final Telephony telephony = Telephony.instance;
   @override
   void initState() {
     super.initState();
@@ -82,17 +87,15 @@ class _MainMapState extends State<MainMap> {
     final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     final double distance = earthRadius * c; // in meters
 
-    // Calculate time difference in seconds
+    // Calculate time difference in hours
     final double timeDifference =
         (currentPosition.timestamp!.millisecondsSinceEpoch -
                 previousPosition.timestamp!.millisecondsSinceEpoch) /
-            1000;
+            1000 /
+            3600;
 
-    // Calculate speed in meters per second
+    // Calculate speed in kilometers per hour
     final double speed = distance / timeDifference;
-
-    // Convert speed to kilometers per hour
-    // final double speedInKmH = speed * 3.6;
 
     return speed;
   }
@@ -108,6 +111,114 @@ class _MainMapState extends State<MainMap> {
       zoom: 14.4746,
     );
     return Scaffold(
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        // crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: Colors.deepPurpleAccent,
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        backgroundColor: Colors.grey[200],
+                        title: TextRegular(
+                            text: 'Sending Report',
+                            fontSize: 12,
+                            color: Colors.grey),
+                        content: SizedBox(
+                          height: 250,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 20, 20, 5),
+                                child: TextFormField(
+                                  maxLines: 5,
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Quicksand'),
+                                  onChanged: (input) {
+                                    report = input;
+                                  },
+                                  decoration: InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 1, color: Colors.white),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    labelText: 'Enter Report',
+                                    labelStyle: const TextStyle(
+                                      fontFamily: 'Quicksand',
+                                      color: Colors.grey,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              MaterialButton(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                color: Colors.blue,
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MainMap()));
+                                  telephony.sendSms(
+                                      to: '09173688850', message: report);
+                                  Get.off(() => const MainMap());
+                                },
+                                child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 50, right: 50),
+                                    child: TextRegular(
+                                        text: 'Send',
+                                        fontSize: 15,
+                                        color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ));
+            },
+            child: const SizedBox(
+              width: 100, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
+              child: Icon(Icons.sms),
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          FloatingActionButton(
+            backgroundColor: Colors.deepPurpleAccent,
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MainMap()),
+              );
+            },
+            child: const SizedBox(
+              width: 100, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
+              child: Icon(Icons.refresh),
+            ),
+          ),
+        ],
+      ),
+
       drawer: const Drawer(
         child: DrawerWidget(),
       ),
@@ -121,14 +232,14 @@ class _MainMapState extends State<MainMap> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: () {
-              // Perform search action
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.send),
+        //     onPressed: () {
+        //       // Perform search action
+        //     },
+        //   ),
+        // ],
       ),
       body: hasLoaded
           ? Column(
@@ -140,6 +251,7 @@ class _MainMapState extends State<MainMap> {
                         buildingsEnabled: true,
                         myLocationEnabled: true,
                         compassEnabled: true,
+                        zoomControlsEnabled: false,
                         indoorViewEnabled: true,
                         mapToolbarEnabled: true,
                         myLocationButtonEnabled: true,
@@ -152,7 +264,7 @@ class _MainMapState extends State<MainMap> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10, top: 10),
                         child: Align(
-                          alignment: Alignment.topLeft,
+                          alignment: Alignment.topCenter,
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -165,9 +277,9 @@ class _MainMapState extends State<MainMap> {
                                 ),
                               ),
                               Text(
-                                "${newSpeed.toStringAsFixed(2)} km/h",
+                                "${newSpeed.toStringAsFixed(2)}\nkm/h",
                                 style: const TextStyle(
-                                  fontSize: 18.0,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),

@@ -43,6 +43,7 @@ dependencies:
   firebase_core:
   cloud_firestore:
   firebase_auth:
+  telephony:
 
 dev_dependencies:
   flutter_test:

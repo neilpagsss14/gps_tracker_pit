@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
+import 'package:intl/intl.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({super.key});
@@ -51,6 +53,7 @@ class _MainMapState extends State<MainMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  final timestamp = DateTime.now(); // Get the current timestamp
   late double lat = 0;
   late double long = 0;
   bool hasLoaded = false;
@@ -151,6 +154,7 @@ class _MainMapState extends State<MainMap> {
           'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
 
       Map<String, dynamic> trackerData = {
+        'timestamp': DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp),
         'latitude': latitude,
         'longitude': longitude,
         'speed': speedWithUnit,
@@ -158,6 +162,30 @@ class _MainMapState extends State<MainMap> {
       };
       dbRef.push().set(trackerData);
     }
+  }
+
+  void eraseDataInDatabase() {
+    // Implement the logic to erase the data in the database using the appropriate database operations
+
+    // For example, if you're using Firebase Realtime Database, you can use the `remove()` method to remove all data under the "Tracker" node:
+    DatabaseReference dbRef = FirebaseDatabase.instance.ref().child("Tracker");
+    dbRef.remove().then((_) {
+      Fluttertoast.showToast(
+        msg: "Data erased successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+      );
+    }).catchError((error) {
+      Fluttertoast.showToast(
+        msg: "Failed to erase data: $error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+      );
+    });
   }
 
   @override
@@ -179,6 +207,15 @@ class _MainMapState extends State<MainMap> {
                 setState(() {
                   isStoringData = !isStoringData;
                 });
+                Fluttertoast.showToast(
+                  msg: isStoringData
+                      ? 'Data storing enabled'
+                      : 'Data storing disabled',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.blue,
+                  textColor: Colors.white,
+                );
               },
               elevation: 2.0,
               fillColor:
@@ -193,6 +230,18 @@ class _MainMapState extends State<MainMap> {
             ),
           ),
           const SizedBox(height: 15),
+          FloatingActionButton(
+            backgroundColor: Colors.deepPurpleAccent,
+            onPressed: () {
+              eraseDataInDatabase();
+            },
+            child: const SizedBox(
+              child: Icon(Icons.cleaning_services_sharp),
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
           FloatingActionButton(
             backgroundColor: Colors.deepPurpleAccent,
             onPressed: () {

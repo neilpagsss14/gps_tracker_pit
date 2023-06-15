@@ -233,10 +233,28 @@ class _MainMapState extends State<MainMap> {
           FloatingActionButton(
             backgroundColor: Colors.deepPurpleAccent,
             onPressed: () {
-              eraseDataInDatabase();
+              showDialog(
+                  barrierDismissible: true,
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: TextRegular(
+                          text: "Are you sure you want to erase all the data",
+                          fontSize: 22,
+                          color: Colors.black),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              eraseDataInDatabase();
+                            },
+                            child: const Text('Yes')),
+                      ],
+                    );
+                  });
             },
             child: const SizedBox(
-              child: Icon(Icons.cleaning_services_sharp),
+              child: Icon(Icons.auto_delete_rounded),
             ),
           ),
           const SizedBox(

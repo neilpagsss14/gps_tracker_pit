@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location_tracker/services/add_data.dart';
 import 'package:location_tracker/widgets/text_widget.dart';
 import '../widgets/drawer_widget.dart';
 import 'dart:math' as math;
@@ -160,6 +161,8 @@ class _MainMapState extends State<MainMap> {
         'speed': speedWithUnit,
         'googleMapsLink': googleMapsLink,
       };
+      addData(DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp), latitude,
+          longitude, speedWithUnit, googleMapsLink);
       dbRef.push().set(trackerData);
     }
   }
